@@ -25,3 +25,5 @@ TestPolicy       : Testing Create Ransomware File"
 TestStandard     : Testing Create Standard File"
 ```
 Thank you www.bcyber.com.au for the sample ransomware encrypted file extensions list in 2020 (latest)
+
+Youtube : https://www.youtube.com/watch?v=16a9fre7_rY&list=PLYB0wmM9UgXyA38wQZ9MvQfzyVEmqHdSw&ab_channel=PumpithUngsupanit
