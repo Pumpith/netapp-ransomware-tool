@@ -42,7 +42,7 @@ $controller = "cluster1"
 
 $vserver_name = "svm_cifs"
 
-$vol_share_name_include = "cifs_share"
+$vol_share_name_include = "finance"
 
 #----------------------------------------------------------[Fix Parameter]----------------------------------------------------------
 
@@ -267,6 +267,8 @@ function TestStandard {
             if($line -match $regex){
                 # Work here
                 $i++;
+                $Randomtext = -join ((33..126) | Get-Random -Count 1 | % {[char]$_})
+                Write-Host "Replace string * to" $Randomtext
                 write-host "Ransomware Name $i :  " $line
                 New-Item -Path $exp_standard_dir -Name $i"."$line -ItemType "file" -Value $line
                 #sleep(1)
@@ -282,6 +284,43 @@ function TestStandard {
 
 }
 
+function TestSimFile {
+
+    #Create NTAP Ransomware Folder
+    if(!(Test-Path -path $exp_standard_dir))  
+    {  
+        New-Item -ItemType directory -Path $exp_standard_dir
+        Write-Host "Folder path has been created successfully at: " $exp_standard_dir
+               
+    }
+    else
+    {
+        Write-Host "The given folder path $directoyPath already exists";
+    }
+
+    #Remove-Item -path $exp_standard_dir\* –recurse
+
+        foreach($line in Get-Content $script_location\$policy_list_allow) {
+
+            if($line -match $regex){
+                # Work here
+                $i++;
+                $NameList=’2018-report’,’2018-data’,’2019-report’,’2019-data’,’2020-report’,’2020-report’
+                $Randomtext= Get-Random -InputObject $NameList
+                write-host "Replace string * to" $Randomtext  
+                write-host "Ransomware Name $i :  " $line
+                New-Item -Path $share_drive -Name $Randomtext"."$line -ItemType "file" -Value $line
+                #sleep(1)
+            }
+        }
+
+    Get-ChildItem $exp_standard_dir | Sort CreationTime | Out-File $script_location_log\$policy_list_allow.log
+
+    Write-Host "# --------------------------------"
+    Write-Host "File Extensions   =" (Get-Content $script_location\$policy_list_allow).Length 
+    Write-Host "Total Create File =" @( Get-ChildItem $exp_standard_dir ).Count;
+    Write-Host "# --------------------------------"
+}
 #-----------------------------------------------------------[Execution]------------------------------------------------------------
 
 switch ($func) {
@@ -293,7 +332,7 @@ switch ($func) {
     Write-Host "Press Enter to continue"
 
     $userInput = Read-Host
-    RemoveFpolicy
+    DeletePolicy
     }
 
 "ApplyPolicy"  {
@@ -346,6 +385,15 @@ switch ($func) {
     Write-Host "Press Enter to continue"
     $userInput = Read-Host
     TestStandard 
+    }
+
+"TestSimFile"  {
+    Write-Host "# --------------------------------"
+    Write-Host "# Testing Create Standard File to" $exp_standard_dir;
+    Write-Host "# --------------------------------"
+    Write-Host "Press Enter to continue"
+    $userInput = Read-Host
+    TestSimFile 
     }
 
 "AllPolicy"{
